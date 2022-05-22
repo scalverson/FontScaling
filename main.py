@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import QWidget, QLabel
 # TODO: Get RichText support working (Qt.mightBeRichText() function not working in PyQt6 currently
 # TODO: Optimize font point size calculation loops.  Can be laggy if resizing quickly or big changes
 #        Ideas to do this:
+#          - Figure out way to make rough initial prediction of pointSize to get close and then dial in from there
 #          - Instead of constant 0.5 pointSize steps, adjust step size dynamically (start larger and get smaller as you approach desired size)
 #          - Are all of the while loops actually necessary?  Could loops be combined or eliminated?
 #          - 1000 loop iterations seems a bit much maybe?
@@ -342,6 +343,7 @@ class SimpleWidget(QLabel, ScalingParentWidget):
 
 # Example of a compound widget using multiple child widgets
 # TODO: QLineEdit may need special treatment. Do you really want font to resize based on how much text someone typed in?
+# TODO: Should CompoundWidget children scale fonts independently, or somehow force all fonts to match the tightest constraint for uniformity?
 class CompoundWidget(ScalingParentWidget):
     def __init__(self, label1, label2, parent=None):
         from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QSizePolicy
@@ -349,7 +351,7 @@ class CompoundWidget(ScalingParentWidget):
 
         label = QLabel(label1)
         label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)  # Become QSizePolicy.Expanding in PyQt5
-        label.setAlignment(Qt.AlignmentFlag.AlignRight)  # Become Qt.AlignRight in PyQt5
+        label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)  # Become Qt.AlignRight in PyQt5
         edit = QLineEdit(label2)
         edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)  # Become QSizePolicy.Expanding in PyQt5
 
