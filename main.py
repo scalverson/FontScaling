@@ -1,9 +1,10 @@
-#####################################################################
+###########################################################################
 # Name: FontScaling
-# Author: Shawn Alverson - largely based off of caQtDM from PSI
+# Author: Shawn Alverson - SLAC National Accelerator Laboratory
+# Largely based off of caQtDM from PSI: https://github.com/caqtdm/caqtdm
 #
 # Purpose: Proof-of-concept for bring dynamic font scaling to PyDM
-#####################################################################
+###########################################################################
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QTextDocument, QFontMetrics
