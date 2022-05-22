@@ -15,6 +15,10 @@ from PyQt6.QtWidgets import QWidget, QLabel
 # TODO: Test for Vertical font labels.  Not sure if this is an option in PyDM currently?
 # TODO: Get RichText support working (Qt.mightBeRichText() function not working in PyQt6 currently
 # TODO: Optimize font point size calculation loops.  Can be laggy if resizing quickly or big changes
+#        Ideas to do this:
+#          - Instead of constant 0.5 pointSize steps, adjust step size dynamically (start larger and get smaller as you approach desired size)
+#          - Are all of the while loops actually necessary?  Could loops be combined or eliminated?
+#          - 1000 loop iterations seems a bit much maybe?
 
 # Global variables
 FONT_SIZE_TOLERANCE_MARGIN = 3  # pixel
@@ -303,6 +307,11 @@ class ScalingLabel(QLabel):
 
 
 # Example of a top-level inheritable widget class (comparable to PyDMPrimitiveWidget)
+# TODO: Add QTimer to resizeEvent to slow down how often its called
+# TODO: Add check for resize delta and only scale fonts if delta big enough (if (e.size() - e.oldSize) > MIN_DELTA)
+# TODO: Investigate making this QMainWindow event rather than just parent widget class?
+# TODO: Would it help performance to not create FontScalingWidget each Event for every child widget?
+#       Try rewriting font scaler class such that its instantiated once for Parent widget and child is passed as argument to methods
 class ScalingParentWidget(QWidget):
     def __init__(self, parent=None):
         super(ScalingParentWidget, self).__init__(parent)
@@ -331,6 +340,7 @@ class SimpleWidget(QLabel, ScalingParentWidget):
 
 
 # Example of a compound widget using multiple child widgets
+# TODO: QLineEdit may need special treatment. Do you really want font to resize based on how much text someone typed in?
 class CompoundWidget(ScalingParentWidget):
     def __init__(self, label1, label2, parent=None):
         from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QSizePolicy
@@ -364,15 +374,15 @@ if __name__ == "__main__":
     normal_label = QLabel('Without Scaling')
     long_scaled_label = ScalingLabel('This is a long scaled label!')
     short_scaled_label = ScalingLabel('Shrt scld lbl!')
-    group_widget = CompoundWidget('QLabel:', 'this is a QLineEdit')
-    simple_widget = SimpleWidget('Simple Scaling QLabel')
+    compound_inherited_widget = CompoundWidget('QLabel:', 'this is a QLineEdit')
+    simple_inherited_widget = SimpleWidget('Simple Scaling QLabel')
 
     layout = QVBoxLayout()
     layout.addWidget(normal_label)
     layout.addWidget(long_scaled_label)
     layout.addWidget(short_scaled_label)
-    layout.addWidget(group_widget)
-    layout.addWidget(simple_widget)
+    layout.addWidget(compound_inherited_widget)
+    layout.addWidget(simple_inherited_widget)
 
     # These stretch factors seem to be necessary to reign in warring widget stretch - makes font scaling more predictable and even
     layout.setStretch(0, 1)
